@@ -1,0 +1,3 @@
+COLLATE ENCI_Base
+CREATE TRIGGER refs__refs_ord_AI  AFTER INSERT ON refs BEGIN INSERT INTO refs_ord (ro_trash_state, ro_key_2, ro_key_3, ro_id) VALUES (new.trash_state, EN_MAKE_SORT_KEY(new.author,2,12), EN_MAKE_SORT_KEY(new.year,3,12), new.id); END;
+CREATE TRIGGER refs__refs_ord_AU  AFTER UPDATE ON refs BEGIN DELETE FROM refs_ord WHERE ro_id = old. id;INSERT INTO refs_ord (ro_trash_state, ro_key_2, ro_key_3, ro_id) VALUES (new.trash_state, EN_MAKE_SORT_KEY(new.author,2,12), EN_MAKE_SORT_KEY(new.year,3,12), new.id); END;
