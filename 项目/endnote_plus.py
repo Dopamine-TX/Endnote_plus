@@ -1,29 +1,33 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 import sqlite3
 from collections import namedtuple
+import collections
 import string
 #import chardet
 import os
-import subprocess
 import re
+import pickle
 
 
-# In[2]:
+# In[3]:
 
 
-# '''自定义排序函数'''
-# def my_collate(str1,str2):
-#     if st1[1: -1] == st2[1: -1]:
-#         return 0
-#     elif st1[1: -1] > st2[1: -1]:
-#         return 1 
-#     else: 
-#         return -1
+Item = collections.namedtuple('Item', 'abb all_w')
+# tree=[]
+# for i in range(0,26):
+#     alphabet=chr(ord('a')+i)
+#     tree.append(pickle.load(open('terms/tree.'+alphabet,'rb')))
+# tree.append(pickle.load(open('terms/tree._','rb')))
+tree=pickle.load(open('terms/terms.tree','rb'))
+
+
+# In[4]:
+
 
 '''读文件'''
 def read_file(filepath):
@@ -32,7 +36,7 @@ def read_file(filepath):
     return content
 
 
-# In[3]:
+# In[5]:
 
 
 '''首字母大写其余小写,去除末尾非字母符号'''
@@ -45,7 +49,26 @@ def normalize(s):
     return s
 
 
-# In[4]:
+# In[50]:
+
+
+'''获取期刊全名'''
+def get_journal(term):
+    i=ord(term[0].lower())-ord('a')
+#     if i in range(0,26):
+#         t=sorted(tree[i].find(Item(term, term), 100))
+#     else:
+#         t=sorted(tree[26].find(Item(term, term), 100))
+    t=sorted(tree.find(Item(term, term), 0))#！！！这里调节。！！！
+    try:#不一定有解
+        print(t[0])
+        return t[0][1].all_w
+    except:
+        print("error")
+        return "error"
+
+
+# In[46]:
 
 
 '''处理标题的功能函数-1'''
@@ -69,7 +92,24 @@ def title_handle(c):
         i+=1    
 
 
-# In[5]:
+# In[47]:
+
+
+def journals_handle(c):
+    c.execute('SELECT secondary_title FROM refs')
+    journals=c.fetchall()
+    i=1
+    for journal in journals:
+        if journal[0]:
+            print(journal[0])
+            journal_=get_journal(journal[0])
+            command='UPDATE refs SET secondary_title = "'+journal_+ '" where ID='+str(i)            
+#       title=normalize(str(title[0]))
+#         print(chardet.detect(str.encode(command)))
+            c.execute(command)
+
+
+# In[48]:
 
 
 # Create table c.execute('''CREATE TABLE stocks(date text, trans text, symbol text, qty real, price real)''')
@@ -82,7 +122,7 @@ def title_handle(c):
 # Just be sure any changes have been committed or they will be lost. conn.close()
 
 
-# In[6]:
+# In[49]:
 
 
 if __name__ == '__main__':
@@ -123,20 +163,27 @@ if __name__ == '__main__':
 #     print(c.fetchall())
     
     #论文名格式处理
-    title_handle(c)
+    journals_handle(c)#title_handle(c)
     
     conn.commit()
-    conn.close()
+    
+
+
+# In[25]:
+
+
+c.execute('PRAGMA table_info(refs)')
+print(c.fetchall())
+
+
+# In[52]:
+
+
+print(sorted(tree.find(Item("International Conference on Mathematical Modeling in Physical Science"," term"), 50))[0])
 
 
 # In[ ]:
 
 
-
-
-
-# In[ ]:
-
-
-
+conn.close()
 
