@@ -35,8 +35,8 @@ for term_file in term_files: #遍历文件夹
                 print(term)
                 tree.add(Item(term,journal))
     f.close()
-    with open('terms/terms.tree',"wb") as file:
-        pickled_lambda = cloudpickle.dump(tree,file)
+with open('terms/terms.tree',"wb") as file:
+    pickled_lambda = cloudpickle.dump(tree,file)
         
 
 
