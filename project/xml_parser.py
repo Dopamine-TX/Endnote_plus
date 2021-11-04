@@ -13,5 +13,5 @@ def parse_exported_xml(xml_filename):
             jname = stitle.find("style").text
             jnames.append(jname)
 
-     return jnames
+    return jnames
     
